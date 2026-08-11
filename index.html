@@ -163,7 +163,7 @@ input:focus,textarea:focus{border-color:#6e9ab5;box-shadow:0 0 0 3px rgba(63,113
 <button class="btn-danger" id="removeMap" type="button">지도 삭제</button>
 </div>
 </div>
-<div class="help">네이버지도, 카카오맵 등에서 분석 지역이 보이도록 캡처한 이미지를 첨부해 주세요. JPG, PNG, WEBP 파일을 사용할 수 있습니다.</div>
+<div class="help">네이버지도, 카카오맵 등에서 분석 지역이 보이도록 캡처한 이미지를 첨부해 주세요. JPG, PNG, WEBP 파일을 사용할 수 있습니다. 이미지를 복사한 상태라면 이 화면 아무 곳에서나 <strong>Ctrl+V</strong>로 바로 붙여넣기도 가능합니다.</div>
 <input accept="image/png,image/jpeg,image/webp" id="mapFile" type="file"/>
 <div class="map-preview" id="mapPreview">
 <img alt="첨부한 분석 지역 지도 미리보기" id="mapImage"/>
@@ -206,7 +206,7 @@ let saveTimer=null;
 // ▼ 본사 제출 기능 설정 ▼
 // 아래 SCRIPT_URL 값을 Apps Script 배포 후 발급받은 웹 앱 URL로 교체하세요.
 // (Code.gs 안내 참고: 배포 > 새 배포 > 웹 앱 > 액세스 권한 "전체" > 배포 후 나오는 URL)
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxUSny0l1w_yoGVtRjTSXDmKlN2XeYvf45YnlXr_29g7nsugZyJYXZno69jYXAv0sIh/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxAHKWTaOMoMVxz2Due7PirfYop1DXmgs04As9KT5xD9rFj8ATvAiZNZ6ae5t9IQ3Vz/exec';
 
 let currentMapDataUrl='';
 let currentMapFileName='';
@@ -426,6 +426,21 @@ document.getElementById('mapFile').addEventListener('change',e=>{
   handleMapFile(e.target.files && e.target.files[0]);
 });
 document.getElementById('removeMap').addEventListener('click',removeMap);
+
+document.addEventListener('paste',e=>{
+  const items=(e.clipboardData||window.clipboardData)?.items;
+  if(!items)return;
+  for(const item of items){
+    if(item.type && item.type.indexOf('image')===0){
+      const file=item.getAsFile();
+      if(file){
+        e.preventDefault();
+        handleMapFile(file);
+      }
+      break;
+    }
+  }
+});
 
 loadDraft();
 </script>
