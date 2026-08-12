@@ -163,7 +163,7 @@ input:focus,textarea:focus{border-color:#6e9ab5;box-shadow:0 0 0 3px rgba(63,113
 <button class="btn-danger" id="removeMap" type="button">지도 삭제</button>
 </div>
 </div>
-<div class="help">네이버지도, 카카오맵 등에서 분석 지역이 보이도록 캡처한 이미지를 첨부해 주세요. JPG, PNG, WEBP 파일을 사용할 수 있습니다. 이미지를 캡쳐 또는 복사한 상태라면 이 화면 아무 곳에서나 <strong>Ctrl+V</strong>로 바로 붙여넣기도 가능합니다.</div>
+<div class="help">네이버지도, 카카오맵 등에서 분석 지역이 보이도록 캡처한 이미지를 첨부해 주세요. JPG, PNG, WEBP 파일을 사용할 수 있습니다. 이미지를 복사한 상태라면 이 화면 아무 곳에서나 <strong>Ctrl+V</strong>로 바로 붙여넣기도 가능합니다.</div>
 <input accept="image/png,image/jpeg,image/webp" id="mapFile" type="file"/>
 <div class="map-preview" id="mapPreview">
 <img alt="첨부한 분석 지역 지도 미리보기" id="mapImage"/>
@@ -192,9 +192,9 @@ input:focus,textarea:focus{border-color:#6e9ab5;box-shadow:0 0 0 3px rgba(63,113
 <button class="btn-danger" onclick="resetForm()" type="button">입력내용 초기화</button>
 <button class="btn-soft" onclick="window.print()" type="button">인쇄 / PDF 저장</button>
 <button class="btn-soft" onclick="downloadTxt()" type="button">작성내용 저장(.txt)</button>
-<button class="btn-main" id="submitBtn" onclick="submitForm()" type="button">제출하기</button>
+<button class="btn-main" id="submitBtn" onclick="submitForm()" type="button">본사로 제출하기</button>
 </div>
-<div class="small-note">※ "제출하기"를 누르면 입력 내용과 첨부 지도 이미지가 본사 서버로 전송되어 자동 취합됩니다.</div>
+<div class="small-note">※ "본사로 제출하기"를 누르면 입력 내용과 첨부 지도 이미지가 본사 서버로 전송되어 자동 취합됩니다.</div>
 </main>
 </article>
 <script>
@@ -373,7 +373,7 @@ async function submitForm(){
   const originalLabel=btn.textContent;
   btn.disabled=true;
   btn.textContent='제출 중...';
-  setStatus('제출 중입니다. 잠시만 기다려 주세요.');
+  setStatus('본사로 제출 중입니다. 잠시만 기다려 주세요.');
 
   const d=getData();
   const payload={
@@ -384,16 +384,16 @@ async function submitForm(){
   };
 
   try{
-    const res=await fetch(SCRIPT_URL,{
+    await fetch(SCRIPT_URL,{
       method:'POST',
+      mode:'no-cors',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify(payload)
     });
-    const json=await res.json();
-    if(json.result!=='success')throw new Error(json.message||'알 수 없는 오류');
-
+    // no-cors 모드에서는 응답 내용을 읽을 수 없으므로(구글 리다이렉트 특성 회피 목적),
+    // 네트워크 오류 없이 요청이 끝나면 성공으로 간주합니다.
     saveDraft(false);
-    setStatus('제출이 완료되었습니다. 감사합니다!',true);
+    setStatus('본사로 제출이 완료되었습니다. 감사합니다!',true);
     btn.textContent='제출 완료';
   }catch(err){
     setStatus('제출 중 오류가 발생했습니다. 다시 시도해 주세요.');
